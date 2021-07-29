@@ -33,8 +33,8 @@ using namespace QHttpEngine;
 
 ServerPrivate::ServerPrivate(Server *httpServer)
     : QObject(httpServer),
-      q(httpServer),
-      handler(0)
+      handler(0),
+      q(httpServer)
 {
 }
 
@@ -91,7 +91,7 @@ void Server::incomingConnection(qintptr socketDescriptor)
         });
 
         // If an error occurs, delete the socket
-        connect(socket, static_cast<void(QAbstractSocket::*)(QAbstractSocket::SocketError)>(&QAbstractSocket::error),
+        connect(socket, static_cast<void(QAbstractSocket::*)(QAbstractSocket::SocketError)>(&QAbstractSocket::errorOccurred),
             socket, &QSslSocket::deleteLater);
 
         socket->setSocketDescriptor(socketDescriptor);
