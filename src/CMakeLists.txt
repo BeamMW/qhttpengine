@@ -51,6 +51,13 @@ set_target_properties(qhttpengine PROPERTIES
     SOVERSION             ${PROJECT_VERSION_MAJOR}
 )
 
+if(MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4456")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4251")
+elseif (APPLE)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-private-field") # 3rdparty/qhttpengine/src/src/range_p.h
+endif()
+
 target_include_directories(qhttpengine PUBLIC
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>"
