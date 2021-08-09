@@ -24,6 +24,7 @@
 #include <QFileInfo>
 #include <QFileInfoList>
 #include <QUrl>
+#include <QPointer>
 
 #include <qhttpengine/filesystemhandler.h>
 #include <qhttpengine/qiodevicecopier.h>
@@ -88,8 +89,12 @@ void FilesystemHandlerPrivate::processFile(Socket *socket, const QString &absolu
     QIODeviceCopier *copier = new QIODeviceCopier(file, socket);
     connect(copier, &QIODeviceCopier::finished, copier, &QIODeviceCopier::deleteLater);
     connect(copier, &QIODeviceCopier::finished, file, &QFile::deleteLater);
-    connect(copier, &QIODeviceCopier::finished, [socket]() {
-        socket->close();
+
+    QPointer<Socket> qps = socket;
+    connect(copier, &QIODeviceCopier::finished, [qps]() {
+        if(qps) {
+            qps->close();
+        }
     });
 
     // Stop the copier if the socket is disconnected
