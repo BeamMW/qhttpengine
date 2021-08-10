@@ -77,7 +77,7 @@ QByteArray FilesystemHandlerPrivate::mimeType(const QString &absolutePath)
 void FilesystemHandlerPrivate::processFile(Socket *socket, const QString &absolutePath)
 {
     // Attempt to open the file for reading
-    QFile *file = new QFile(absolutePath, this);
+    QFile *file = new QFile(absolutePath);
     if (!file->open(QIODevice::ReadOnly)) {
         delete file;
 
@@ -86,11 +86,16 @@ void FilesystemHandlerPrivate::processFile(Socket *socket, const QString &absolu
     }
 
     // Create a QIODeviceCopier to copy the file contents to the socket
-    QIODeviceCopier *copier = new QIODeviceCopier(file, socket, this);
+    QIODeviceCopier *copier = new QIODeviceCopier(file, socket);
     connect(copier, &QIODeviceCopier::finished, copier, &QIODeviceCopier::deleteLater);
     connect(copier, &QIODeviceCopier::finished, file, &QFile::deleteLater);
-    connect(copier, &QIODeviceCopier::finished, [socket]() {
-        socket->close();
+
+    QPointer<Socket> qsp = socket;
+    connect(copier, &QIODeviceCopier::finished, [qsp]() {
+        if (qsp)
+        {
+            qsp->close();
+        }
     });
 
     // Stop the copier if the socket is disconnected
