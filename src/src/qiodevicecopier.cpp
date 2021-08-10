@@ -22,9 +22,8 @@
 
 #include <QIODevice>
 #include <QTimer>
-
+#include <QPointer>
 #include <qhttpengine/qiodevicecopier.h>
-
 #include "qiodevicecopier_p.h"
 
 using namespace QHttpEngine;
@@ -94,7 +93,12 @@ void QIODeviceCopierPrivate::nextBlock()
     if (src->atEnd() || (rangeTo != -1 && src->pos() > rangeTo)) {
         Q_EMIT q->finished();
     } else {
-        QTimer::singleShot(0, this, &QIODeviceCopierPrivate::nextBlock);
+        QPointer<QIODeviceCopierPrivate> qp = this;
+        QTimer::singleShot(0, this, [qp]() {
+            if (qp) {
+                qp->nextBlock();
+            }
+        });
     }
 }
 
@@ -154,9 +158,20 @@ void QIODeviceCopier::start()
     connect(d->src, &QIODevice::readChannelFinished, d, &QIODeviceCopierPrivate::onReadChannelFinished);
 
     // The first read from the device needs to be triggered
-    QTimer::singleShot(0, d, d->src->isSequential() ?
-            &QIODeviceCopierPrivate::onReadyRead :
-            &QIODeviceCopierPrivate::nextBlock);
+    QPointer<QIODeviceCopierPrivate> qp = d;
+    bool isSeq = d->src->isSequential();
+    QTimer::singleShot(0, d, [qp, isSeq]() {
+        if (qp) {
+            if (isSeq)
+            {
+                qp->onReadyRead();
+            }
+            else
+            {
+                qp->nextBlock();
+            }
+        }
+    });
 }
 
 void QIODeviceCopier::stop()
