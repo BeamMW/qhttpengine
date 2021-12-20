@@ -64,7 +64,7 @@ target_include_directories(qhttpengine PUBLIC
     "$<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}>"
 )
 
-target_link_libraries(qhttpengine Qt5::Network)
+target_link_libraries(qhttpengine Qt6::Network Qt6::Core5Compat)
 
 install(TARGETS qhttpengine EXPORT qhttpengine-export
     RUNTIME DESTINATION "${BIN_INSTALL_DIR}"

@@ -137,13 +137,13 @@ public:
     }
 
     template <typename Func1>
-    inline typename QtPrivate::QEnableIf<!QtPrivate::AreArgumentsCompatible<Func1, QObject*>::value, void>::Type
+    inline typename std::enable_if<!QtPrivate::AreArgumentsCompatible<Func1, QObject*>::value, void>::Type
             registerMethod(const QString &name, Func1 slot, bool readAll = true) {
         registerMethod(name, Q_NULLPTR, slot, readAll);
     }
 
     template <typename Func1>
-    inline typename QtPrivate::QEnableIf<!QtPrivate::FunctionPointer<Func1>::IsPointerToMemberFunction &&
+    inline typename std::enable_if<!QtPrivate::FunctionPointer<Func1>::IsPointerToMemberFunction &&
 #if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
                                              !std::is_same<const char*, Func1>::value,
 #else

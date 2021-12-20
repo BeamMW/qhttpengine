@@ -18,7 +18,8 @@ set(INCLUDE_INSTALL_DIR include CACHE STRING "Header installation directory rela
 set(DOC_INSTALL_DIR share/doc/qhttpengine CACHE STRING "Documentation installation directory relative to the install prefix")
 set(EXAMPLES_INSTALL_DIR "${LIB_INSTALL_DIR}/qhttpengine/examples" CACHE STRING "Examples installation directory relative to the install prefix")
 
-find_package(Qt5Network 5.4 REQUIRED)
+find_package(Qt6Network 5.4 REQUIRED)
+find_package(Qt6 COMPONENTS Core5Compat REQUIRED)
 
 set(CMAKE_AUTOMOC ON)
 
@@ -37,7 +38,7 @@ endif()
 
 option(BUILD_TESTS "Build the test suite" OFF)
 if(BUILD_TESTS)
-    find_package(Qt5Test 5.4 REQUIRED)
+    find_package(Qt6Test 5.4 REQUIRED)
     enable_testing()
     add_subdirectory(tests)
 endif()
