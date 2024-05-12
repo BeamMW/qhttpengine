@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Nathan Osman
+ * Copyright (c) 2017-2024 Nathan Osman
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -61,7 +61,7 @@ bool LocalFilePrivate::setPermission()
     ea.grfAccessMode = GRANT_ACCESS;
     ea.grfInheritance = SUB_CONTAINERS_AND_OBJECTS_INHERIT;
     ea.Trustee.TrusteeForm = TRUSTEE_IS_NAME;
-    ea.Trustee.ptstrName = L"CURRENT_USER";
+    ea.Trustee.ptstrName = const_cast<LPWCH>(L"CURRENT_USER");
 
     // Create a new ACL with a single access control entry
     PACL pACL;

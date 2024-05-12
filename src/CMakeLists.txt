@@ -42,7 +42,7 @@ endif()
 add_library(qhttpengine STATIC ${HEADERS} ${SRC})
 
 set_target_properties(qhttpengine PROPERTIES
-    CXX_STANDARD          11
+    CXX_STANDARD          20
     CXX_STANDARD_REQUIRED ON
     DEFINE_SYMBOL         QT_NO_SIGNALS_SLOTS_KEYWORDS
     DEFINE_SYMBOL         QHTTPENGINE_LIBRARY
