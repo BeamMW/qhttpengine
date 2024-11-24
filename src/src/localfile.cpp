@@ -54,14 +54,14 @@ bool LocalFilePrivate::setPermission()
     // which consists of one or more ACEs (access control entries) - so the
     // ACL for the file must contain only a single ACE, granting access to the
     // file owner (the current user)
-
+    WCHAR name[] = L"CURRENT_USER";
     EXPLICIT_ACCESS_W ea;
     ZeroMemory(&ea, sizeof(EXPLICIT_ACCESS_W));
     ea.grfAccessPermissions = GENERIC_ALL;
     ea.grfAccessMode = GRANT_ACCESS;
     ea.grfInheritance = SUB_CONTAINERS_AND_OBJECTS_INHERIT;
     ea.Trustee.TrusteeForm = TRUSTEE_IS_NAME;
-    ea.Trustee.ptstrName = L"CURRENT_USER";
+    ea.Trustee.ptstrName = name;
 
     // Create a new ACL with a single access control entry
     PACL pACL;

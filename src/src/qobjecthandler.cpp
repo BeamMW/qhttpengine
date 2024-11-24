@@ -22,6 +22,8 @@
 
 #include <QGenericArgument>
 #include <QMetaMethod>
+#include <QMap>
+#include <functional>
 
 #include <qhttpengine/qobjecthandler.h>
 #include <qhttpengine/socket.h>
@@ -70,11 +72,7 @@ void QObjectHandlerPrivate::invokeSlot(Socket *socket, Method m)
             return;
         }
     } else {
-        void *args[] = {
-            Q_NULLPTR,
-            &socket
-        };
-        m.slot.slotObj->call(m.receiver, args);
+        m.func(socket);
     }
 }
 
@@ -104,7 +102,17 @@ void QObjectHandler::registerMethod(const QString &name, QObject *receiver, cons
     d->map.insert(name, QObjectHandlerPrivate::Method(receiver, method, readAll));
 }
 
-void QObjectHandler::registerMethodImpl(const QString &name, QObject *receiver, QtPrivate::QSlotObjectBase *slotObj, bool readAll)
+void QObjectHandler::registerMethod(const QString &name, QObject *receiver, std::function<void(QHttpEngine::Socket*)> functor, bool readAll)
 {
-    d->map.insert(name, QObjectHandlerPrivate::Method(receiver, slotObj, readAll));
+    d->map.insert(name, QObjectHandlerPrivate::Method(receiver, std::move(functor), readAll));
 }
+
+void QObjectHandler::registerMethod(const QString& name, std::function<void(QHttpEngine::Socket*)> functor, bool readAll)
+{
+    registerMethod(name, Q_NULLPTR, std::move(functor), readAll);
+}
+
+//void QObjectHandler::registerMethodImpl(const QString &name, QObject *receiver, std::function<void(Socket*)> functor, bool readAll)
+//{
+//    d->map.insert(name, QObjectHandlerPrivate::Method(receiver, functor, readAll));
+//}
